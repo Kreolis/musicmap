@@ -13,6 +13,6 @@ mkShell {
     libglvnd.dev
     xtensor
     # faiss
-    (faiss.override { pythonSupport = false; })
+    # (faiss.override { pythonSupport = false; })
   ];
 }
