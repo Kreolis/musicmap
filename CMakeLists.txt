@@ -6,6 +6,7 @@ find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(xtensor REQUIRED)
+find_package(SQLiteCpp REQUIRED)
 
 # Zero-overhead Vector2f, because I'm lazy
 find_package(Eigen3 REQUIRED)
@@ -30,5 +31,11 @@ target_compile_features(musicmap PUBLIC cxx_std_20)
 
 target_include_directories(musicmap PUBLIC include/)
 
-target_link_libraries(musicmap imgui GLEW xtensor xtensor::optimize
-                      Eigen3::Eigen)
+target_link_libraries(
+  musicmap
+  imgui
+  GLEW
+  xtensor
+  xtensor::optimize
+  Eigen3::Eigen
+  SQLiteCpp)
