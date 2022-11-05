@@ -12,6 +12,7 @@ mkShell {
     glew
     libglvnd.dev
     xtensor
+    eigen
     # faiss
     # (faiss.override { pythonSupport = false; })
   ];
