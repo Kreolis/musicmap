@@ -13,6 +13,8 @@ mkShell {
     libglvnd.dev
     xtensor
     eigen
+    sqlite
+    sqlitecpp
     # faiss
     # (faiss.override { pythonSupport = false; })
   ];

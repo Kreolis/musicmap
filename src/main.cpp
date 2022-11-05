@@ -1,4 +1,5 @@
 #include <Eigen/Dense>
+#include <SQLiteCpp/SQLiteCpp.h>
 #include <iostream>
 #include <xtensor/xarray.hpp>
 #include <xtensor/xrandom.hpp>
@@ -36,18 +37,39 @@ std::vector<std::string> randomTitles(const int nSongs) {
   return titles;
 }
 
-int main(int argc, char **argv) {
+Data loadData(SQLite::Database &db) {
+  SQLite::Statement qMaxId(db, "SELECT MAX(rowid) FROM songs");
+  qMaxId.executeStep();
+  const int maxId = qMaxId.getColumn(0);
+  const auto nSongs = maxId + 1;
+
+  std::vector<std::string> titles(nSongs);
+
+  SQLite::Statement qSongs(db,
+                           "SELECT rowid, file_name AS name, musicnn_max_pool "
+                           "AS repr FROM songs ORDER BY rowid");
+  while (qSongs.executeStep()) {
+    const long id = qSongs.getColumn("rowid");
+    /* by index, because assume there can be blanks */
+    titles[id] = std::string(qSongs.getColumn("name"));
+  }
+
+  constexpr auto nTags = 50;
+  return Data{.locs = xt::random::rand({nSongs, 2}, -10.0f, 10.0f),
+              .tags = xt::random::randint({nSongs}, 0, nTags),
+              .titles = std::move(titles)};
+}
+
+void imguiEntryPoint() {
   SafeSDLSession sdlSession;
   SafeSDLWindow window("musicmap");
   SafeImGui imguiCtx(window.window(), window.context());
 
-  constexpr int nSongs = 200;
-  constexpr int nTags = 50;
+  /* FIXME: hard-coded relative path */
+  SQLite::Database db("musicmap.db",
+                      SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
-  std::cout << "H" << std::endl;
-  Data data = {.locs = xt::random::rand({nSongs, 2}, -10.0f, 10.0f),
-               .tags = xt::random::randint({nSongs}, 0, nTags - 1),
-               .titles = randomTitles(nSongs)};
+  Data data = loadData(db);
   PureState state = {.query = Vec2f(0.0f, 0.0f)};
   PureState cached = {.query = Vec2f(std::numeric_limits<float>::quiet_NaN(),
                                      std::numeric_limits<float>::quiet_NaN())};
@@ -123,6 +145,15 @@ int main(int argc, char **argv) {
       }
     }
     cached = state;
+  }
+}
+
+int main(int argc, char **argv) {
+  try {
+    imguiEntryPoint();
+  } catch (std::exception &probablyAnSqliteError) {
+    std::cerr << probablyAnSqliteError.what();
+    return 1;
   }
   return 0;
 }
