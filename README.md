@@ -22,8 +22,10 @@ Or selecting a certain mood one wants to explore for a new creation to aid in th
 
 For even quicker interaction the audio from a microphone can be analyzed and the program will guide the user to similar sounding tracks in the collection.
 The program can also automatically create a playlist for a selected mood.
+To help the user get into a happier state it starts of with a sad mood and gradually makes the songs in the playlist happier.
 
 By providing the lyrics to a song another model can be used to explore the music category space by filtering it with text prompts (DALL-E2 style) additionally to the mood and genre.
+
 
 ## Functionallity
 

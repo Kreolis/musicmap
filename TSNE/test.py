@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.manifold import TSNE
 
 # read in data
-file_path = "/home/oberlav1/scratch/graphics/oberlav1/junction22/global_outputs.npy"
+file_path = "../global_outputs.npy"
 songs = np.load(file_path, allow_pickle=True)
 num_songs = len(songs)
 num_features = len(songs[0]["tags"])
@@ -19,7 +19,7 @@ for i, song in enumerate(range(num_songs)):
 
 # TSNE
 input_data = StandardScaler().fit_transform(feature_array)
-tsne = TSNE(n_components=3, learning_rate=200, perplexity=100, verbose=2, angle=0.1)
+tsne = TSNE(n_components=3, learning_rate=200, perplexity=50, verbose=2, angle=0.1)
 embedding = tsne.fit_transform(input_data)
 
 np.save(dirname(file_path) + "/tsne_embedding", embedding)
