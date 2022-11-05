@@ -13,11 +13,28 @@ using Vec2f = Eigen::Vector2f;
 struct Data {
   xt::xarray<float, xt::layout_type::column_major> locs;
   xt::xarray<int> tags;
+  std::vector<std::string> titles;
 };
 
 struct PureState {
   Eigen::Vector2f query;
 };
+
+std::vector<std::string> randomTitles(const int nSongs) {
+  std::vector<std::string> words = {"Deep",    "Blue", "Sea", "Pale", "Eyes",
+                                    "Chaotic", "Good", "Bad", "Ugly"};
+
+  auto &rndEngine = xt::random::get_default_random_engine();
+  /* Whatever ... */
+  std::vector<std::string> titles;
+  titles.reserve(nSongs);
+  for (int i = 0; i < nSongs; ++i) {
+    std::uniform_int_distribution<int> unif(0, words.size() - 1);
+    int w0 = unif(rndEngine), w1 = unif(rndEngine), w2 = unif(rndEngine);
+    titles.push_back(words[w0] + " " + words[w1] + " " + words[w2]);
+  }
+  return titles;
+}
 
 int main(int argc, char **argv) {
   SafeSDLSession sdlSession;
@@ -27,8 +44,10 @@ int main(int argc, char **argv) {
   constexpr int nSongs = 200;
   constexpr int nTags = 50;
 
+  std::cout << "H" << std::endl;
   Data data = {.locs = xt::random::rand({nSongs, 2}, -10.0f, 10.0f),
-               .tags = xt::random::randint({nSongs}, 0, nTags - 1)};
+               .tags = xt::random::randint({nSongs}, 0, nTags - 1),
+               .titles = randomTitles(nSongs)};
   PureState state = {.query = Vec2f(0.0f, 0.0f)};
   PureState cached = {.query = Vec2f(std::numeric_limits<float>::quiet_NaN(),
                                      std::numeric_limits<float>::quiet_NaN())};
@@ -38,6 +57,8 @@ int main(int argc, char **argv) {
     SDLFrame sdlFrame(window.window());
     ImGuiSDLFrame imFrame(window);
     shouldClose |= sdlFrame.shouldClose();
+
+    std::vector<int> frameSelectedSongs;
 
     ImVec2 windowWH = ImVec2(sdlFrame.width(), sdlFrame.height());
 
@@ -56,7 +77,7 @@ int main(int argc, char **argv) {
         (ImPlotFlags_)(ImPlotFlags_NoLegend | ImPlotFlags_NoFrame |
                        ImPlotFlags_NoTitle | ImPlotFlags_NoMenus);
     if (ImBeginPlot plt("Songs",
-                        ImVec2(std::max(1.0f, windowWH.x - 16.0f),
+                        ImVec2(std::max(1.0f, windowWH.x * 0.75f),
                                std::max(1.0f, windowWH.y - 24.0f)),
                         pltFlags);
         plt.visible) {
@@ -76,15 +97,29 @@ int main(int argc, char **argv) {
           marker = ImPlotMarker_Diamond;
           markerSize *= 3.0;
           color = ImPlot::GetColormapColor(selColor);
+          frameSelectedSongs.push_back(i);
         }
 
         ImPlot::SetNextMarkerStyle(marker, markerSize, color);
-        ImPlot::PlotScatter("##song2d", &data.locs(i, 0), &data.locs(i, 1), 1);
+        ImPlot::PlotScatter("song2d##", &data.locs(i, 0), &data.locs(i, 1), 1);
       }
       if (ImPlot::IsPlotHovered() && ImGui::IsItemClicked() &&
           ImGui::GetIO().KeyCtrl) {
         const auto mouse = ImPlot::GetPlotMousePos();
         state.query = {mouse.x, mouse.y};
+      }
+    }
+    ImGui::SameLine();
+    ImGui::SetNextWindowSize(
+        ImVec2(windowWH.x * 0.25f - 16.0f, ImGui::GetWindowHeight()),
+        ImGuiCond_Always);
+    ImGui::SetNextWindowPos(ImVec2(ImGui::GetCursorPosX(), 0.0f),
+                            ImGuiCond_Always);
+
+    if (ImBeginWindow wnd("Playlist Window", nullptr, ImGuiWindowFlags_NoMove);
+        wnd.visible) {
+      for (const auto i : frameSelectedSongs) {
+        ImGui::Text("%s", data.titles[i].c_str());
       }
     }
     cached = state;
