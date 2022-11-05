@@ -21,11 +21,12 @@ for song in songs:
     top1tag.append(song["toptags"][0])
 
 unique_tags = list(set(top1tag))
-print(len(unique_tags))
+print("Found ", len(unique_tags), "unique tags")
+
 tag_to_int = {tag: i for i, tag in enumerate(unique_tags)}
+print(tag_to_int)
 
 tag_ints = [tag_to_int[tag] for tag in top1tag]
-print(tag_ints)
 
 plot_3d = True
 
@@ -33,6 +34,7 @@ if plot_3d:
     fig = px.scatter_3d(
         embedding, x=0, y=1, z=2,
         color=tag_ints, 
+        labels=tag_to_int,
         text=names
     )
     #fig.update_traces(marker_size=8)
@@ -40,6 +42,7 @@ else:
     fig = px.scatter(
     embedding, x=0, y=1,
     color=tag_ints, 
+    labels=tag_to_int,
     text=names
 )
 fig.show()

@@ -1,12 +1,14 @@
 import os, sys
 import numpy as np
+from mutagen.easyid3 import EasyID3
 import tqdm
 from musicnn.extractor import extractor
 
-from typing import TypedDict, List
+from typing import TypedDict, List, Any
 
 class analysis_data(TypedDict):
     filename: str
+    mp3tag: Any
     taggram: List[float]
     tags: List[str]
     features: List[str]
@@ -14,9 +16,9 @@ class analysis_data(TypedDict):
     logits: List[float]
 
 class music_analyiser:
-    def __init__(self, fielpath: str) -> None:
+    def __init__(self, filepath: str) -> None:
         self.files = []
-        self.filepath = fielpath
+        self.filepath = filepath
 
     def get_files(self):
         """Collecting all files to be processed"""
@@ -25,6 +27,9 @@ class music_analyiser:
                 if file.endswith(".mp3"):
                     data = analysis_data()
                     data["filename"] = os.path.join(root, file)
+                    
+                    data["mp3tag"] = EasyID3(data["filename"])
+
                     self.files.append(data)
                     #np.append(self.files, data)
         
@@ -66,13 +71,6 @@ class music_analyiser:
     def get_top_tags(self, data: analysis_data, topN: int=3, print_tags: bool=True):
         
         tags_likelihood_mean = np.mean(data["taggram"], axis=0)
-
-        #if print_tags:
-        #    print('[' + file_name + '] Top' + str(topN) + ' tags: ')
-
-        #if save_tags:
-        #    to = open(save_tags, 'a')   
-        #    to.write(file_name + ',' + model + ',input_length=' + str(input_length) + ',input_overlap=' + str(input_overlap)) 
 
         topN_tags = []
         for tag_index in tags_likelihood_mean.argsort()[-topN:][::-1]:

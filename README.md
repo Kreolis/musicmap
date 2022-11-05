@@ -41,11 +41,11 @@ op5=>operation: collect similar music
 e=>end: output similar music as playlist
 
 st->op1->cond1->op2
-cond1(yes)->op3
-cond1(no)->op2
+cond1(no)->op3
+cond1(yes)->op2
 op2->op3->cond2
-cond2(yes)->op5
-cond2(no)->op4
+cond2(no)->op5
+cond2(yes)->op4
 op4->op5->e
 ```
 

@@ -1,5 +1,4 @@
 import os, sys
-from tinytag import TinyTag
 from mutagen.easyid3 import EasyID3
 
 file_names = []
@@ -19,5 +18,5 @@ if __name__ == '__main__':
     print(file_names)
 
     for mp3 in file_names:
-        tag = TinyTag.get(mp3)
+        tag = EasyID3(mp3)
         print(tag)
