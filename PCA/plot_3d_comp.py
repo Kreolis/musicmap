@@ -32,6 +32,7 @@ fig = plt.figure(figsize=(4,4))
 ax = fig.add_subplot(111, projection='3d')
 ax.set_xlabel('Principal Component - 1',fontsize=12)
 ax.set_ylabel('Principal Component - 2',fontsize=12)
+ax.set_ylabel('Principal Component - 3',fontsize=12)
 ax.set_title("Principal Component Analysis of music library",fontsize=12)
 for i, song in enumerate(songs):
     top_tag = np.argmax(feature_array[i,:])
