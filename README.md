@@ -2,63 +2,25 @@
 
 ## Pitch
 
+Down? Angry? Bored? We can help ease you into a different mood. Musicmap finds the path. 
 This small program categorizes your music on your hard drive for later browsing and embeds the genres in an easy-to-navigate visualization to create mood playlists.
 It can use several different algorithms and AI models for music indexing.
 
-## Audience
+## OVERVIEW:
 
-This app can serve several different audiences.
+Musicmap is a versatile music library visualization app that is applicable to a variety of audiences. 
 
-One is artists and DJs with a big collection of music or new music.
-A DJ often has new music he has to categorize and analyze.
-Here the app can help to fasten up the music selection process.
-It can detect genre, mood and energy of a song.
-The information can automatically be embedded into the meta data of the music file.
+Many of us have experienced the positive effects that music can have on our mental health, but it is not always easy to find the perfect playlist to improve our mood. Our interactive music map allows users to visualize their music library based on tags related the mood or vibe of the songs, and allows them to create personalized playlists that transition between moods (e.g., from sad to happy songs) to lift them up when they are down. This app works on personal, local music libraries, so your playlists can stay completely private. 
 
-For artists, it can provide a quick way of getting new inspiration.
-Similar songs a grouped together.
-One can use it either in random mode where it can play a random mood or genre and stay with it.
-Or selecting a certain mood one wants to explore for a new creation to aid in the production process of it.
+Another potential user group is artists and DJs who have a big collection of music. A DJ often has new music that they want to categorize and analyze, and using Musicmap's interactive visualization, they can streamline this process. Musicmap automatically embeds the extracted information about the mood, genre, and energy into the metadata of the music file for easy categorization. For artists, it can provide a quick way of getting new inspiration. One can use it either in random mode where it can play and maintain a random mood or genre , or one can specify a mood they want to explore to aid in the creative process.
 
-For even quicker interaction the audio from a microphone can be analyzed and the program will guide the user to similar sounding tracks in the collection.
-The program can also automatically create a playlist for a selected mood.
-To help the user get into a happier state it starts of with a sad mood and gradually makes the songs in the playlist happier.
+Musicmap takes advantage of the open-source music-tagging model Musicnn to provide users with an user-friendly, interactive way to explore and organize their personal music libraries, and create personalized playlists that can benefit the user's mental health and creative productivity. 
 
-By providing the lyrics to a song another model can be used to explore the music category space by filtering it with text prompts (DALL-E2 style) additionally to the mood and genre.
+## HOW IT WORKS: 
 
-
-## Functionallity
-
-```flow
-st=>start: music files
-op1=>operation: mood and tag analysis
-cond1=>condition: save to meta data?
-op2=>operation: save tag to meta data
-op3=>operation: display latent space
-cond2=>condition: manual exploring?
-op4=>operation: user explores
-op5=>operation: collect similar music
-e=>end: output similar music as playlist
-
-st->op1->cond1->op2
-cond1(no)->op3
-cond1(yes)->op2
-op2->op3->cond2
-cond2(no)->op5
-cond2(yes)->op4
-op4->op5->e
-```
-
-The user specifies a data source.
-This can be either a local music library or a streaming service like Spotify, Tidal, Soundlcoud or Mixcloud.
-When using streaming services the user has to first select either the favorite songs or a playlist.
-
-The program will analyses the music using [Musicnn](https://github.com/jordipons/musicnn).
-It does not use any cloud services for the analysis.
-[Other tagging algorithms](https://github.com/minzwon/sota-music-tagging-models) can be used.
-Based on work by [Won et al. 2020](https://arxiv.org/abs/2006.00751), simple short-chunk CNN models perform the best for music-tagging and have the best generalization abilities.
-Musicnn, which takes into consideration intuition from the music domain, performs well for small data samples but does not generalize well to larger datasets.
-Song-level or long chunk-level trained models do not perform as well for music-tagging applications.
-
-The tags and intermediate analysis results. 
-By using a combination of principal component analysis (PCA) and t-distributed stochastic neighbor embedding (t-SNE) the program can display the latent tag space of the provided music in 2D and 3D.
+1. The user specifies a data source. This can be either a local music library or a streaming service like Spotify, Tidal, Soundlcoud or Mixcloud. When using streaming services the user has to first select either the favourite songs or a playlist.
+2. The music is then automatically tagged using a pre-trained convolutional neural network [Musicnn](https://github.com/jordipons/musicnn). The program considers a 50-tag vocabulary used in the Million Song Dataset (https://github.com/jongpillee/music_dataset_split/tree/master/MSD_split). 
+3. The user can then choose to save the tag information to the songs' metadata. 
+4.  Using a combination of principal component analysis (PCA) and graph search the program will then display the latent tag space of the provided music in 2D and 3D.
+5. The user can then choose to manually explore the latent space using the interactive features of the app. 
+6. Finally, the user can choose to generate playlists. This is done using graph search to create a path of songs of a specified length. Playlists can be created within a specified graph space, or  can be made  such that the songs transition from one area of the graph space to another (e.g., happy to sad). 
