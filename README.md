@@ -60,6 +60,20 @@ Clone [Musicnn](https://github.com/jordipons/musicnn) as a subfolder in this rep
 git clone https://github.com/jordipons/musicnn
 ```
 
+Change outdated dependacies in musicnn so that its setup.py last lines look like that:
+
+```python
+install_requires=['librosa',
+                'tensorflow>=1.14',
+                'numpy']
+```
+
+Install the editable library:
+
+```bash
+pip install -e musicnn
+```
+
 Install the python3 environment requirements from the Pipfile.
 Start the enviroment:
 

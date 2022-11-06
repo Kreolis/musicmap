@@ -149,7 +149,7 @@ def plot_graph(G, path_edges, filename: str = None, save_figure: bool = False):
 
     #Plotting
     pos = nx.spring_layout(G, seed=1)  # Seed for reproducible layout
-    options = {"edge_color":"w", "node_size": 10, "linewidths": 0, "width": 0.01}
+    options = {"edge_color":"k", "node_size": 10, "linewidths": 0, "width": 0.1}
     fig, ax = plt.subplots(1)
     nx.draw(G, pos, ax=ax, **options)
     nx.draw_networkx_edges(
@@ -179,14 +179,15 @@ def output_playlist(filename: str, path: List[int], files: List[str]):
 
     print()
 
-def run_path_plotter(file_folder:str, k_hops: int = 10, start_tag: str = 'Mellow', end_tag:str = 'party'):
+def run_path_plotter(file_folder:str, k_hops: int = 10, start_tag: str = 'Mellow', end_tag:str = 'party', force_compute: bool = False):
     path = get_dir_root(file_folder)
     # read in data
     dir_graph_results = path["graph"]
 
-    compute_cosine_sim(file_folder)
-    create_cos_graph(file_folder)
+    if force_compute: 
+        compute_cosine_sim(file_folder)
+        create_cos_graph(file_folder)
     G, path, path_edges, files = calc_path(file_folder, k_hops, start_tag, end_tag)
-    plot_graph(G, path_edges, os.path.join(dir_graph_results, f"{start_tag}_to_{end_tag}_spring_layout"))
+    plot_graph(G, path_edges, os.path.join(dir_graph_results, f"{start_tag}_to_{end_tag}_spring_layout"), save_figure=True)
     output_playlist(os.path.join(dir_graph_results, f"{start_tag}_to_{end_tag}_play_list"), path, files)
     
