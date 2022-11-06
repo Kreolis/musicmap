@@ -88,14 +88,13 @@ Data loadData(SQLite::Database &db) {
     const auto nMissing = id - latents.ntotal;
     missingTotal += nMissing;
     if (nMissing > 0) {
-      Eigen::MatrixXf missing =
-          Eigen::MatrixXf::Zero(id - latents.ntotal, latentSize);
+      Eigen::MatrixXf missing = Eigen::MatrixXf::Zero(nMissing, latentSize);
       latents.add(nMissing, missing.data());
     }
     latents.add(1, npy.data());
 
     if (nMissing > 0) {
-      Eigen::MatrixXf missing = Eigen::MatrixXf::Zero(id - locIdx.ntotal, 2);
+      Eigen::MatrixXf missing = Eigen::MatrixXf::Zero(nMissing, 2);
       locIdx.add(id - locIdx.ntotal, missing.data());
     }
 
@@ -132,12 +131,23 @@ void imguiEntryPoint() {
     shouldClose |= sdlFrame.shouldClose();
 
     {
-      const auto nNeighbours = 5;
+      const auto nNeighbours = 15;
       data.frameSelectedSongs.clear();
       data.frameSelectedSongs.resize(nNeighbours);
       Eigen::VectorXf dist = Eigen::VectorXf::Zero(nNeighbours);
-      data.locIdx.search(1, state.query.data(), nNeighbours, dist.data(),
-                         data.frameSelectedSongs.data());
+
+      float dNearest;
+      long nearest;
+      data.locIdx.search(1, state.query.data(), 1, &dNearest, &nearest);
+      const auto X =
+          Eigen::Map<const Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic,
+                                         Eigen::RowMajor>>(
+              data.latentIdx.get_xb(), data.latentIdx.ntotal, data.latentIdx.d);
+      data.latentIdx.search(1, X.row(nearest).data(), nNeighbours, dist.data(),
+                            data.frameSelectedSongs.data());
+      if (data.frameSelectedSongs[0] == -1) {
+        data.frameSelectedSongs.clear();
+      }
     }
 
     ImVec2 windowWH = ImVec2(sdlFrame.width(), sdlFrame.height());
@@ -171,13 +181,13 @@ void imguiEntryPoint() {
         ImVec4 color =
             ImPlot::GetColormapColor(std::min(data.tags(i), lastColor));
         ImPlotMarker_ marker = ImPlotMarker_Circle;
-        float markerSize = 5.0f;
+        float markerSize = 2.5f;
 
         if (std::find(data.frameSelectedSongs.begin(),
                       data.frameSelectedSongs.end(),
                       i) != data.frameSelectedSongs.end()) {
           marker = ImPlotMarker_Diamond;
-          markerSize *= 2.0;
+          markerSize *= 3.0;
           color = ImPlot::GetColormapColor(selColor);
         }
 
@@ -197,7 +207,7 @@ void imguiEntryPoint() {
     ImGui::SetNextWindowPos(ImVec2(ImGui::GetCursorPosX(), 0.0f),
                             ImGuiCond_Always);
 
-    if (ImBeginWindow wnd("Playlist Window", nullptr, ImGuiWindowFlags_NoMove);
+    if (ImBeginWindow wnd("Playlist", nullptr, ImGuiWindowFlags_NoMove);
         wnd.visible) {
       for (const auto i : data.frameSelectedSongs) {
         ImGui::Text("%s", data.titles[i].c_str());
