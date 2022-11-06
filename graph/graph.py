@@ -133,7 +133,8 @@ def calc_path(file_folder:str, k_hops: int = 10, start_tag: str = 'Mellow', end_
     for path in all_path:
         if len(path) == k_hops+1:
             k_hop_paths.append(path)
-            break
+            if len(k_hop_paths) > 50:
+                break
 
     # pick random path of specified length
     path = random.choice(k_hop_paths)
