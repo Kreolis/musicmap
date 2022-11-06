@@ -219,9 +219,9 @@ public:
     int numKeys = 0;
     const uint8_t *keyboard = SDL_GetKeyboardState(&numKeys);
 
-    if (keyboard[SDL_SCANCODE_ESCAPE]) {
-      _shouldClose = true;
-    }
+    // if (keyboard[SDL_SCANCODE_ESCAPE]) {
+    //   _shouldClose = true;
+    // }
   }
   ~SDLFrame() {
     SDL_GL_GetDrawableSize(window, &_width, &_height);
