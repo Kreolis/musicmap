@@ -8,10 +8,7 @@ It can use several different algorithms and AI models for music indexing.
 
 ![Mellow_to_party_spring_layout](https://user-images.githubusercontent.com/66002874/200176045-65ea2c53-d1eb-4dbc-bc0e-12f64214ccfa.png)
 
-
 https://user-images.githubusercontent.com/9720532/200154985-32699ad3-6749-4f37-abbd-bf59dd6736b6.mp4
-
-
 
 ## OVERVIEW:
 
