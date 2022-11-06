@@ -2,6 +2,7 @@
 #include <SQLiteCpp/SQLiteCpp.h>
 #include <iostream>
 #include <xtensor/xarray.hpp>
+#include <xtensor/xnpy.hpp>
 #include <xtensor/xrandom.hpp>
 
 #include "imraii.ipp"
@@ -37,6 +38,17 @@ std::vector<std::string> randomTitles(const int nSongs) {
   return titles;
 }
 
+struct membuf : std::streambuf {
+  membuf(char const *base, size_t size) {
+    char *p(const_cast<char *>(base));
+    this->setg(p, p, p + size);
+  }
+};
+struct imemstream : virtual membuf, std::istream {
+  imemstream(char const *base, size_t size)
+      : membuf(base, size), std::istream(static_cast<std::streambuf *>(this)) {}
+};
+
 Data loadData(SQLite::Database &db) {
   SQLite::Statement qMaxId(db, "SELECT MAX(rowid) FROM songs");
   qMaxId.executeStep();
@@ -47,11 +59,17 @@ Data loadData(SQLite::Database &db) {
 
   SQLite::Statement qSongs(db,
                            "SELECT rowid, file_name AS name, musicnn_max_pool "
-                           "AS repr FROM songs ORDER BY rowid");
+                           "AS npy FROM songs ORDER BY rowid");
   while (qSongs.executeStep()) {
     const long id = qSongs.getColumn("rowid");
     /* by index, because assume there can be blanks */
     titles[id] = std::string(qSongs.getColumn("name"));
+
+    auto npyCol = qSongs.getColumn("npy");
+    const auto npySize = npyCol.getBytes();
+    const char *npyBlob = static_cast<const char *>(npyCol.getBlob());
+    imemstream ifs(npyBlob, npySize);
+    const auto npy = xt::load_npy<float>(ifs);
   }
 
   constexpr auto nTags = 50;
