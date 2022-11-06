@@ -1,9 +1,7 @@
 # Music Map
 
-## Pitch
-
 Down? Angry? Bored? We can help ease you into a different mood. Musicmap finds the path. 
-This small program categorizes your music on your hard drive for later browsing and embeds the genres in an easy-to-navigate visualization to create mood playlists with a specific genre gradient.
+This small program categorizes your music on your hard drive for later browsing and embeds the genres in an easy-to-navigate visualization and create playlists with a specific mood / genre gradient.
 
 ![Mellow_to_party_spring_layout](https://user-images.githubusercontent.com/66002874/200176045-65ea2c53-d1eb-4dbc-bc0e-12f64214ccfa.png)
 
@@ -11,13 +9,14 @@ https://user-images.githubusercontent.com/9720532/200154985-32699ad3-6749-4f37-a
 
 ## OVERVIEW:
 
-Many of us have experienced the positive effects that music can have on our mental health, but it is not always easy to find the perfect playlist to improve our mood. Our interactive music map allows users to visualize their music library based on tags related the mood or vibe of the songs, and allows them to create personalized playlists that transition between moods (e.g., from sad to happy songs) to lift them up when they are down. This app works on personal, local music libraries, so your playlists can stay completely private. 
+Many of us have experienced the positive effects that music can have on our mental health, but it is not always easy to find the perfect playlist to improve our mood. Our interactive music map allows users to visualize their music library based on tags related the mood or vibe of the songs, and allows them to create personalized playlists that transition between moods (e.g., from sad to happy songs) to lift them up when they are down. The user can choose a start tag, end tag and number of songs and the created playlist smoothly changes between genres/mood with specidfied direction and number of hops.
 
-Another potential user group is artists and DJs who have a big collection of music. A DJ often has new music that they want to categorize and analyze, and using Musicmap's interactive visualization, they can streamline this process. Musicmap automatically embeds the extracted information about the mood, genre, and energy into the metadata of the music file for easy categorization.
+Another potential user group is artists and DJs who have a big collection of music. Musicmap automatically embeds the extracted information about the mood, genre, and energy into the metadata of the music file for easy categorization and the Musicmap's interactive visualization provides an interesting analysis  and inspiration tool by displaying __k__ most similar songs to a chosen song.
 
 Musicmap takes advantage of the open-source music-tagging model Musicnn but is in contrast based on the latent embeddings of the model.
 Using the embeddings has the advantage of better extracting relations between the songs than using the forced output tags.
-The user can visually navigate in their music library and get a view of the k most similar songs to a chosen song, to get inspiration for playlists. On top the user can choose a start tag, end tag and number of songs to create a playlists that smoothly changes between genres/mood to a specidfied direction.
+
+This app works on personal, local music libraries, so your playlists can stay completely private. 
 
 ## HOW IT WORKS: 
 
