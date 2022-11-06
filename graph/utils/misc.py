@@ -7,4 +7,7 @@ def get_dir_root(file_folder: str):
     path["MSD_tags"] = os.path.join(path["root"], "MSD_tags")
     path["graph"] = os.path.join(path["root"], "graph_results")
 
+    if not os.path.exists("graph_results"):
+            os.mkdir("graph_results") 
+
     return path

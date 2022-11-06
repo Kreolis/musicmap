@@ -1,12 +1,12 @@
-import os
+import os, random
 from glob import glob
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import spatial
 import networkx as nx
-from utils.misc import get_dir_root
+from .utils.misc import get_dir_root
 from os.path import basename
-
+from typing import List
 
 def compute_cosine_sim(file_folder:str):
 
@@ -14,7 +14,8 @@ def compute_cosine_sim(file_folder:str):
     # read in data
     dir_data = path["MSD_tags"]
     dir_out = path["graph"]
-    files = sorted(glob(os.path.join(dir_data, "*.npy")))
+    pp = os.path.join(dir_data, "*.npy")
+    files = sorted(glob(pp))
     num_songs = len(files)
 
     test = np.load(files[0], allow_pickle=True).item()
@@ -100,7 +101,7 @@ def create_cos_graph(file_folder:str):
 
     print()
 
-def calc_path(file_folder:str):
+def calc_path(file_folder:str, k_hops: int = 10, start_tag: str = 'Mellow', end_tag:str = 'party'):
     path = get_dir_root(file_folder)
     # read in data
     dir_data = path["MSD_tags"]
@@ -116,18 +117,17 @@ def calc_path(file_folder:str):
     logits_array = np.load(os.path.join(dir_graph_results, "logits_array.npy"))
 
     # Define start and end genre 
-    start_key = 'Mellow'
-    end_key = 'party'
+    start_tag = 'Mellow'
+    end_tag = 'party'
     # find index
-    start_ind = np.where(tag_options == start_key)[0][0]
-    end_ind = np.where(tag_options == end_key)[0][0]
+    start_ind = np.where(tag_options == start_tag)[0][0]
+    end_ind = np.where(tag_options == end_tag)[0][0]
     # get ind-most probable song
     ind = 10
     start_song = np.argsort(logits_array[:,start_ind])[-ind]
     end_song = np.argsort(logits_array[:,end_ind])[-ind]
 
     # find path between start adn end song with specified length
-    k_hops = 10
     all_path = nx.all_simple_paths(G, source=str(start_song), target=str(end_song), cutoff=k_hops)
     k_hop_paths = []
     for path in all_path:
@@ -142,7 +142,7 @@ def calc_path(file_folder:str):
         edge = (path[n], path[n+1])
         path_edges.append(edge)
     
-    return G, path, path_edges, files, start_key, end_key
+    return G, path, path_edges, files
 
 def plot_graph(G, path_edges, filename: str = None, save_figure: bool = False):
 
@@ -178,14 +178,14 @@ def output_playlist(filename: str, path: List[int], files: List[str]):
 
     print()
 
-def run_path_plotter(file_folder:str):
+def run_path_plotter(file_folder:str, k_hops: int = 10, start_tag: str = 'Mellow', end_tag:str = 'party'):
     path = get_dir_root(file_folder)
     # read in data
     dir_graph_results = path["graph"]
 
     compute_cosine_sim(file_folder)
     create_cos_graph(file_folder)
-    G, path, path_edges, files, start_key, end_key = calc_path(file_folder:str)
-    plot_graph(G, path_edges, os.path.join(dir_graph_results, f"{start_key}_to_{end_key}_spring_layout"))
-    output_playlist(os.path.join(dir_graph_results, f"{start_key}_to_{end_key}_play_list"), path, files)
+    G, path, path_edges, files = calc_path(file_folder, k_hops, start_tag, end_tag)
+    plot_graph(G, path_edges, os.path.join(dir_graph_results, f"{start_tag}_to_{end_tag}_spring_layout"))
+    output_playlist(os.path.join(dir_graph_results, f"{start_tag}_to_{end_tag}_play_list"), path, files)
     

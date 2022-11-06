@@ -19,6 +19,7 @@ class music_analyiser:
     def __init__(self, filepath: str) -> None:
         self.files = []
         self.filepath = filepath
+        self.msd_save_path = "MSD_tags"
 
     def get_files(self):
         """Collecting all files to be processed"""
@@ -37,12 +38,16 @@ class music_analyiser:
 
     def run(self, export_sidecar: bool = True, extract_features: bool = False):
         """Run musicnn analysis on files"""
+
+        if not os.path.exists(self.msd_save_path):
+            os.mkdir(self.msd_save_path)  
+
         for data in tqdm.tqdm(self.files):
             filepath = data["filename"]
 
             base = os.path.basename(data["filename"])
             sidecar_name = os.path.splitext(base)[0] + ".npy"
-            sidecar_path = os.path.join(self.filepath, sidecar_name)
+            sidecar_path = os.path.join(self.msd_save_path, sidecar_name)
 
             if os.path.exists(sidecar_path):
                 print("Sidecar found, Skipping ", filepath)
@@ -85,7 +90,7 @@ class music_analyiser:
     def save_sidecar(self, data: analysis_data):
         base = os.path.basename(data["filename"])
         sidecar_name = os.path.splitext(base)[0] + ".npy"
-        sidecar_path = os.path.join(self.filepath, sidecar_name)
+        sidecar_path = os.path.join(self.msd_save_path, sidecar_name)
         np.save(sidecar_path, data)
         
 
