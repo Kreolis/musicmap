@@ -3,10 +3,6 @@
 Down? Angry? Bored? We can help ease you into a different mood. Musicmap finds the path. 
 This small program categorizes your music on your hard drive for later browsing and embeds the genres in an easy-to-navigate visualization and create playlists with a specific mood / genre gradient.
 
-![Mellow_to_party_spring_layout](https://user-images.githubusercontent.com/66002874/200176045-65ea2c53-d1eb-4dbc-bc0e-12f64214ccfa.png)
-
-https://user-images.githubusercontent.com/9720532/200154985-32699ad3-6749-4f37-abbd-bf59dd6736b6.mp4
-
 ## OVERVIEW:
 
 Many of us have experienced the positive effects that music can have on our mental health, but it is not always easy to find the perfect playlist to improve our mood. Our interactive music map allows users to visualize their music library based on tags related the mood or vibe of the songs, and allows them to create personalized playlists that transition between moods (e.g., from sad to happy songs) to lift them up when they are down. The user can choose a start tag, end tag and number of songs and the created playlist smoothly changes between genres/mood with specidfied direction and number of hops.
@@ -17,6 +13,11 @@ Musicmap takes advantage of the open-source music-tagging model Musicnn but is i
 Using the embeddings has the advantage of better extracting relations between the songs than using the forced output tags.
 
 This app works on personal, local music libraries, so your playlists can stay completely private. 
+
+![Mellow_to_party_spring_layout](https://user-images.githubusercontent.com/66002874/200176045-65ea2c53-d1eb-4dbc-bc0e-12f64214ccfa.png)
+
+https://user-images.githubusercontent.com/9720532/200154985-32699ad3-6749-4f37-abbd-bf59dd6736b6.mp4
+
 
 ## HOW IT WORKS: 
 
