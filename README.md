@@ -41,11 +41,16 @@ or [vcpkg](https://github.com/microsoft/vcpkg).
 
 Fetch the [implot/](./implot) and [imgui/](./imgui) git submodules.
 
+Cf. the next section (preprocessing)
+or import the provided [sample data](https://gist.github.com/29ae32af3222950d307883a3d3ad24b5).
+
 ```console
 $ cmake -B build/ -S . -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 $ cmake --build build/
 $ ./build/musicmap
 ```
+
+The app currently expects the data in `musicmap.db` in the working directory.
 
 ## Usage: preprocessing
 
