@@ -24,3 +24,24 @@ Musicmap takes advantage of the open-source music-tagging model Musicnn to provi
 4.  Using a combination of principal component analysis (PCA) and graph search the program will then display the latent tag space of the provided music in 2D and 3D.
 5. The user can then choose to manually explore the latent space using the interactive features of the app. 
 6. Finally, the user can choose to generate playlists. This is done using graph search to create a path of songs of a specified length. Playlists can be created within a specified graph space, or  can be made  such that the songs transition from one area of the graph space to another (e.g., happy to sad). 
+
+## Usage
+
+Clone [Musicnn](https://github.com/jordipons/musicnn) as a subfolder in this repository. 
+
+```bash
+git clone https://github.com/jordipons/musicnn
+```
+
+Install the python3 environment requirements from the Pipfile.
+Start the enviroment:
+
+```bash
+pipenv shell
+```
+
+Run musicmap. It will create the sidecar files with the model data and automatically feed that into the route analysis.
+
+```bash
+python3 musicmap.py <PATH_TO_MP3_FILES>
+```

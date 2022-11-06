@@ -1,10 +1,10 @@
-from os.path import dirname
+import os
 import numpy as np
 
-def get_dir_root():
+def get_dir_root(file_folder: str):
     path = {}
-    path["root"] = "/home/oberlav1/scratch/graphics/oberlav1/junction22"
-    path["MSD_tags"] = path["root"] + "/MSD_tags"
-    path["graph"] = path["root"] + "/graph_results"
+    path["root"] = file_folder
+    path["MSD_tags"] = os.path.join(path["root"], "MSD_tags")
+    path["graph"] = os.path.join(path["root"], "graph_results")
 
     return path
