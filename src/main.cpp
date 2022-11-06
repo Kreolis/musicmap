@@ -1,5 +1,6 @@
 #include <Eigen/Dense>
 #include <SQLiteCpp/SQLiteCpp.h>
+#include <faiss/IndexFlat.h>
 #include <iostream>
 #include <xtensor/xarray.hpp>
 #include <xtensor/xnpy.hpp>
@@ -16,6 +17,9 @@ struct Data {
   xt::xarray<float, xt::layout_type::column_major> locs;
   xt::xarray<int> tags;
   std::vector<std::string> titles;
+  faiss::IndexFlatL2 latentIdx;
+  faiss::IndexFlatL2 locIdx;
+  std::vector<long> frameSelectedSongs;
 };
 
 struct PureState {
@@ -56,26 +60,55 @@ Data loadData(SQLite::Database &db) {
   const auto nSongs = maxId + 1;
 
   std::vector<std::string> titles(nSongs);
+  xt::xarray<float> locs = xt::zeros<float>({nSongs, 2});
+  faiss::IndexFlatL2 latents;
+  faiss::IndexFlatL2 locIdx(2);
 
   SQLite::Statement qSongs(db,
-                           "SELECT rowid, file_name AS name, musicnn_max_pool "
-                           "AS npy FROM songs ORDER BY rowid");
+                           "SELECT s.rowid, vc.x AS x, vc.y AS y, s.file_name "
+                           "AS name, s.title AS title, s.musicnn_max_pool "
+                           "AS npy FROM songs AS s INNER JOIN vic_coords AS vc "
+                           "ON s.rowid = vc.song ORDER BY rowid");
+  long missingTotal = 0;
   while (qSongs.executeStep()) {
     const long id = qSongs.getColumn("rowid");
     /* by index, because assume there can be blanks */
-    titles[id] = std::string(qSongs.getColumn("name"));
+    titles[id] = std::string(qSongs.getColumn("title"));
+    locs(id, 0) = qSongs.getColumn("x").getDouble();
+    locs(id, 1) = qSongs.getColumn("y").getDouble();
 
     auto npyCol = qSongs.getColumn("npy");
     const auto npySize = npyCol.getBytes();
     const char *npyBlob = static_cast<const char *>(npyCol.getBlob());
     imemstream ifs(npyBlob, npySize);
     const auto npy = xt::load_npy<float>(ifs);
+
+    const auto latentSize = npy.shape(-1);
+
+    const auto nMissing = id - latents.ntotal;
+    missingTotal += nMissing;
+    if (nMissing > 0) {
+      Eigen::MatrixXf missing =
+          Eigen::MatrixXf::Zero(id - latents.ntotal, latentSize);
+      latents.add(nMissing, missing.data());
+    }
+    latents.add(1, npy.data());
+
+    if (nMissing > 0) {
+      Eigen::MatrixXf missing = Eigen::MatrixXf::Zero(id - locIdx.ntotal, 2);
+      locIdx.add(id - locIdx.ntotal, missing.data());
+    }
+
+    Vec2f xy = {locs(id, 0), locs(id, 1)};
+    locIdx.add(1, xy.data());
   }
 
   constexpr auto nTags = 50;
-  return Data{.locs = xt::random::rand({nSongs, 2}, -10.0f, 10.0f),
+  return Data{.locs = std::move(locs),
               .tags = xt::random::randint({nSongs}, 0, nTags),
-              .titles = std::move(titles)};
+              .titles = std::move(titles),
+              .latentIdx = std::move(latents),
+              .locIdx = std::move(locIdx)};
 }
 
 void imguiEntryPoint() {
@@ -98,7 +131,14 @@ void imguiEntryPoint() {
     ImGuiSDLFrame imFrame(window);
     shouldClose |= sdlFrame.shouldClose();
 
-    std::vector<int> frameSelectedSongs;
+    {
+      const auto nNeighbours = 5;
+      data.frameSelectedSongs.clear();
+      data.frameSelectedSongs.resize(nNeighbours);
+      Eigen::VectorXf dist = Eigen::VectorXf::Zero(nNeighbours);
+      data.locIdx.search(1, state.query.data(), nNeighbours, dist.data(),
+                         data.frameSelectedSongs.data());
+    }
 
     ImVec2 windowWH = ImVec2(sdlFrame.width(), sdlFrame.height());
 
@@ -133,11 +173,12 @@ void imguiEntryPoint() {
         ImPlotMarker_ marker = ImPlotMarker_Circle;
         float markerSize = 5.0f;
 
-        if ((state.query - p).norm() < 1.0) {
+        if (std::find(data.frameSelectedSongs.begin(),
+                      data.frameSelectedSongs.end(),
+                      i) != data.frameSelectedSongs.end()) {
           marker = ImPlotMarker_Diamond;
-          markerSize *= 3.0;
+          markerSize *= 2.0;
           color = ImPlot::GetColormapColor(selColor);
-          frameSelectedSongs.push_back(i);
         }
 
         ImPlot::SetNextMarkerStyle(marker, markerSize, color);
@@ -158,10 +199,11 @@ void imguiEntryPoint() {
 
     if (ImBeginWindow wnd("Playlist Window", nullptr, ImGuiWindowFlags_NoMove);
         wnd.visible) {
-      for (const auto i : frameSelectedSongs) {
+      for (const auto i : data.frameSelectedSongs) {
         ImGui::Text("%s", data.titles[i].c_str());
       }
     }
+
     cached = state;
   }
 }

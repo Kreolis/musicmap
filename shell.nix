@@ -15,7 +15,7 @@ mkShell {
     eigen
     sqlite
     sqlitecpp
-    # faiss
+    faiss
     # (faiss.override { pythonSupport = false; })
   ];
 }

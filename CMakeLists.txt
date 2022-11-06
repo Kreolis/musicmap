@@ -1,12 +1,28 @@
 cmake_minimum_required(VERSION 3.22)
 
+# FIXME: ugly ugly ugly hacks from
+# https://cliutils.gitlab.io/modern-cmake/chapters/packages/OpenMP.html
 project(musicmap)
+find_package(OpenMP)
+if(NOT TARGET OpenMP::OpenMP_CXX)
+  find_package(Threads REQUIRED)
+  add_library(OpenMP::OpenMP_CXX IMPORTED INTERFACE)
+  set_property(TARGET OpenMP::OpenMP_CXX PROPERTY INTERFACE_COMPILE_OPTIONS
+                                                  ${OpenMP_CXX_FLAGS})
+  # Only works if the same flag is passed to the linker; use CMake 3.9+
+  # otherwise (Intel, AppleClang)
+  set_property(
+    TARGET OpenMP::OpenMP_CXX PROPERTY INTERFACE_LINK_LIBRARIES
+                                       ${OpenMP_CXX_FLAGS} Threads::Threads)
+endif()
+# End of ugly ugly ugly hack
 
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(xtensor REQUIRED)
 find_package(SQLiteCpp REQUIRED)
+find_package(faiss REQUIRED)
 
 # Zero-overhead Vector2f, because I'm lazy
 find_package(Eigen3 REQUIRED)
@@ -38,4 +54,5 @@ target_link_libraries(
   xtensor
   xtensor::optimize
   Eigen3::Eigen
-  SQLiteCpp)
+  SQLiteCpp
+  faiss)
