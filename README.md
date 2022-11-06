@@ -54,13 +54,22 @@ The app currently expects the data in `musicmap.db` in the working directory.
 
 ## Usage: preprocessing
 
-Clone [Musicnn](https://github.com/jordipons/musicnn) as a subfolder in this repository. 
+Clone [musicnn](https://github.com/jordipons/musicnn):
 
-```bash
+```console
 git clone https://github.com/jordipons/musicnn
 ```
 
-Change outdated dependacies in musicnn so that its setup.py last lines look like that:
+If you have Nix, you can bootstrap a musicnn-friendly environment via [./musicnn-shell.nix](./musicnn-shell.nix).
+
+Install the editable library:
+
+```bash
+pip install -e musicnn/
+```
+
+If you haven't got Nix yet, you'll have to patch the outdated dependecies in
+musicnn so that its setup.py last lines look like that:
 
 ```python
 install_requires=['librosa',
@@ -68,20 +77,15 @@ install_requires=['librosa',
                 'numpy']
 ```
 
-Install the editable library:
 
-```bash
-pip install -e musicnn
-```
-
-Install the python3 environment requirements from the Pipfile.
-Start the enviroment:
+...then install the python3 environment requirements with the [Pipfile](./Pipfile) as a reference:
 
 ```bash
 pipenv shell
 ```
 
-Run musicmap. It will create the sidecar files with the model data and automatically feed that into the route analysis.
+Run musicmap.
+It will create the sidecar files with the model data and automatically feed that into the route analysis.
 
 ```bash
 python3 musicmap.py -p <PATH_TO_MP3_FOLDER>
