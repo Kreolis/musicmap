@@ -31,7 +31,23 @@ Musicmap takes advantage of the open-source music-tagging model Musicnn to provi
 5. The user can then choose to manually explore the latent space using the interactive features of the app. 
 6. Finally, the user can choose to generate playlists. This is done using graph search to create a path of songs of a specified length. Playlists can be created within a specified graph space, or  can be made  such that the songs transition from one area of the graph space to another (e.g., happy to sad). 
 
-## Usage
+## Usage: the interactive app
+
+To set up the development environment simply enter [`nix-shell`](./shell.nix)
+if you're using [Nix](https://github.com/NixOS/nix),
+otherwise install `xtensor`, `eigen`, `faiss`, `sqlitecpp`, `sdl2` and `glew`
+from [conda-forge](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html)
+or [vcpkg](https://github.com/microsoft/vcpkg).
+
+Fetch the [implot/](./implot) and [imgui/](./imgui) git submodules.
+
+```console
+$ cmake -B build/ -S . -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+$ cmake --build build/
+$ ./build/musicmap
+```
+
+## Usage: preprocessing
 
 Clone [Musicnn](https://github.com/jordipons/musicnn) as a subfolder in this repository. 
 
@@ -55,3 +71,7 @@ python3 musicmap.py -p <PATH_TO_MP3_FOLDER>
 ```bash
 python3 musicmap.py --help
 ```
+
+Export the pre-computed features and 2D embeddings
+via [not-npys-to-sqlite.py](./not-npys-to-sqlite.py)
+via [vic-graph-dict-to-sqlite.py](./vic-graph-dict-to-sqlite.py)
