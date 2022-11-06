@@ -6,6 +6,12 @@ Down? Angry? Bored? We can help ease you into a different mood. Musicmap finds t
 This small program categorizes your music on your hard drive for later browsing and embeds the genres in an easy-to-navigate visualization to create mood playlists.
 It can use several different algorithms and AI models for music indexing.
 
+
+
+https://user-images.githubusercontent.com/9720532/200154985-32699ad3-6749-4f37-abbd-bf59dd6736b6.mp4
+
+
+
 ## OVERVIEW:
 
 Musicmap is a versatile music library visualization app that is applicable to a variety of audiences. 
