@@ -75,3 +75,28 @@ python3 musicmap.py --help
 Export the pre-computed features and 2D embeddings
 via [not-npys-to-sqlite.py](./not-npys-to-sqlite.py)
 via [vic-graph-dict-to-sqlite.py](./vic-graph-dict-to-sqlite.py)
+
+
+## Roadmap
+
+- [x] Figure out how to extract per-song "latent codes" via some learnable model.
+  Done via [`musicnn.extractor(..., extract_features=True)`](https://github.com/jordipons/musicnn/). 
+  We use the `max_pool` output of the model, which is a (time-indexed) sequence of 753-dimensional vectors.
+  We reduce it to a single 753-vector via max pooling.
+- [x] Visually 2D/3D embeddings of the latent codes: PCA, tSNE. We've tried representing our song collection as a fully-connected graph with similarity-weighted edges and embedding that in 2D/3D using [networkx](https://networkx.org/). We can export these pre-computed layouts to use with our proof-of-concept interactive app.
+- [x] Playlist construction: use the weighted graph interpretation to sample paths between two selected points. For instance, use that to find a "smooth" transition from "sad" songs to "cheerful" music. One can control the tradeoff between the playlist size and the "smoothness". Proof-of-concept in python, via `networkx`.
+- [x] App Proof-of-Concept
+    - [x] Display the song collection as a scattering of points on a plane: start with fake (randomly generated data
+    - [x] Use pre-computed 2D coordinates stored in an sqlite file
+    - [x] Ctrl-click on a blob to query its $K$ nearest songs (fixed $K$). Display the selected songs in a list
+    - [ ] Song details on hover
+    - [ ] Path sampling tool: select a song-origin and a song-destination to get a playlist connecting the two
+    - [ ] Incremental and/or external PCA instead of pre-computed coordinates
+    - [ ] Export the encoder model (openvino/ONNX) to be used directly in the app.
+    - [ ] "Add song" functionality (prerequisite: model export)
+    - [ ] A language model with the same latent space as the audio encoder, to
+      accomodate song search via text prompts.
+    - [ ] Scaling: display "collapsed" blobs instead of individual songs until
+      the user zooms in
+    - [ ] Static builds
+- [x] Junction. Submit.
