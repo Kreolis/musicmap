@@ -43,5 +43,9 @@ pipenv shell
 Run musicmap. It will create the sidecar files with the model data and automatically feed that into the route analysis.
 
 ```bash
-python3 musicmap.py <PATH_TO_MP3_FILES>
+python3 musicmap.py -p <PATH_TO_MP3_FOLDER>
+```
+
+```bash
+python3 musicmap.py --help
 ```
