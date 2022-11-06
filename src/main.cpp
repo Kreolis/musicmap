@@ -61,7 +61,7 @@ Data loadData(SQLite::Database &db) {
 
   std::vector<std::string> titles(nSongs);
   xt::xarray<float> locs = xt::zeros<float>({nSongs, 2});
-  faiss::IndexFlatL2 latents;
+  faiss::IndexFlatL2 latents(753);
   faiss::IndexFlatL2 locIdx(2);
 
   SQLite::Statement qSongs(db,
