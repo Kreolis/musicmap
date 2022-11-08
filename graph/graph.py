@@ -122,10 +122,12 @@ def calc_path(file_folder:str, k_hops: int = 10, start_tag: str = 'Mellow', end_
     # find index
     start_ind = np.where(tag_options == start_tag)[0][0]
     end_ind = np.where(tag_options == end_tag)[0][0]
-    # get ind-most probable song
-    ind = 10
-    start_song = np.argsort(logits_array[:,start_ind])[-ind]
-    end_song = np.argsort(logits_array[:,end_ind])[-ind]
+    # choose random song between the ind most representative songs
+    ind = 5
+    start_song = np.argsort(logits_array[:,start_ind])[-ind:]
+    start_song = random.choice(start_song)
+    end_song = np.argsort(logits_array[:,end_ind])[-ind:]
+    end_song = random.choice(end_song)
 
     # find path between start adn end song with specified length
     all_path = nx.all_simple_paths(G, source=str(start_song), target=str(end_song), cutoff=k_hops)
